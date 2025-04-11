@@ -35,7 +35,9 @@ Utbildare  Konsult: En utbildare kan vara en konsult, en konsult är en utbildar
   }
   ...
 
-<img src = "../assets/Labb_01.png>
+<img src = "../assets/conceptual-01.png">
+
+
 
 
 

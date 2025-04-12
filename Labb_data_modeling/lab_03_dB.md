@@ -1,111 +1,105 @@
 Table Adress {
   Adress_id int [pk]
   Stad varchar(100)
-  gata varchar(100)
-  post_nummer varchar(10)
+  Gata varchar(100)
+  Postnummer varchar(10)
 }
 
 Table personal_info {
-  person_ID int [pk]
-  personnummer varchar(20)
+  Person_ID int [pk]
+  Personnummer varchar(20)
   Förnamn varchar(50)
   Efternamn varchar(50)
   E_post varchar(100)
-  telefonnummer varchar(20)
-  Anhörig_info varchar(255)
+  Telefonnummer varchar(20)
+}
+
+Table anhörig {
+  Anhörig_ID int [pk]
+  Person_ID int [ref: > personal_info.Person_ID]
+  Relation varchar(50)
+  Namn varchar(100)
 }
 
 Table skolan {
-  skolan_ID int [pk]
+  Skolan_ID int [pk]
   Namn varchar(100)
-  organisationsnummer varchar(50)
+  Organisationsnummer varchar(50)
   E_post varchar(100)
-  telefonnummer varchar(20)
-  Asress_id int
+  Adress_id int [ref: > Adress.Adress_id]
 }
 
 Table anställd {
   Anställning_ID int [pk]
-  skol_ID int
-  person_ID int
+  Skolan_ID int [ref: > skolan.Skolan_ID]
+  Person_ID int [ref: > personal_info.Person_ID]
 }
 
 Table utbildningsledare {
-  utbildningsledare_ID int [pk]
-  Anställning_ID int
+  Utbildningsledare_ID int [pk]
+  Anställning_ID int [ref: > anställd.Anställning_ID]
 }
 
 Table kurs {
   Kurs_ID int [pk]
-  kurs_namn varchar(100)
-  kurs_kod varchar(50)
-  poäng int
-  beskrivning varchar(255)
+  Kurs_namn varchar(100)
+  Kurs_kod varchar(50)
+  Poäng int
+  Beskrivning varchar(255)
 }
 
 Table lärare {
-  lärare_ID int [pk]
-  Anställning_ID int
-  kurs_id int
+  Lärare_ID int [pk]
+  Anställning_ID int [ref: > anställd.Anställning_ID]
+  
+}
+Table KursLärare {
+  Kurs_ID int [ref: > kurs.Kurs_ID]
+  Lärare_ID int [ref: > lärare.Lärare_ID]
+  Primary Key (Kurs_ID, Lärare_ID)
+}
+
+Table organisation {
+  Organisation_ID varchar(50) [pk]
+  Namn varchar(100)
+  Kontaktperson varchar(100)
 }
 
 Table konsult {
-  konsult_ID int [pk]
-  Anställning_ID int
-  organisations_ID varchar(50)
-  utbildare_ID varchar(50)
-  kurs_ID int
-  Adress_id int
+  Konsult_ID int [pk]
+  Anställning_ID int [ref: > anställd.Anställning_ID]
+  Organisation_ID varchar(50) [ref: > organisation.Organisation_ID]
+  Utbildare_ID varchar(50)
+  Kurs_ID int [ref: > kurs.Kurs_ID]
+  Adress_id int [ref: > Adress.Adress_id]
 }
 
 Table program {
-  program_ID int [pk]
-  program_namn varchar(100)
-  skolan_id int
+  Program_ID int [pk]
+  Program_namn varchar(100)
+  Skolan_ID int [ref: > skolan.Skolan_ID]
 }
 
 Table Klass {
-  klass_ID int [pk]
-  program_ID int
-  Utbildningsledare_ID int
+  Klass_ID int [pk]
+  Program_ID int [ref: > program.Program_ID]
+  Utbildningsledare_ID int [ref: > utbildningsledare.Utbildningsledare_ID]
 }
 
 Table student {
-  student_ID int [pk]
-  person_ID int
-  klass_ID int
+  Student_ID int [pk]
+  Person_ID int [ref: > personal_info.Person_ID]
+  Klass_ID int [ref: > Klass.Klass_ID]
 }
 
 Table program_kurs {
-  kurs_ID int
-  program_ID int
-
-  Primary Key (kurs_ID, program_ID)
+  Kurs_ID int [ref: > kurs.Kurs_ID]
+  Program_ID int [ref: > program.Program_ID]
+  Primary Key (Kurs_ID, Program_ID)
 }
 
 Table enrollment {
-  student_ID int
-  kurs_ID int
-
-  Primary Key (student_ID, kurs_ID)
+  Student_ID int [ref: > student.Student_ID]
+  Kurs_ID int [ref: > kurs.Kurs_ID]
+  Primary Key (Student_ID, Kurs_ID)
 }
-
-
-Ref: skolan.Asress_id > Adress.Adress_id
-Ref: anställd.skol_ID > skolan.skolan_ID
-Ref: anställd.person_ID > personal_info.person_ID
-Ref: utbildningsledare.Anställning_ID > anställd.Anställning_ID
-Ref: lärare.Anställning_ID > anställd.Anställning_ID
-Ref: lärare.kurs_id > kurs.Kurs_ID
-Ref: konsult.Anställning_ID > anställd.Anställning_ID
-Ref: konsult.kurs_ID > kurs.Kurs_ID
-Ref: konsult.Adress_id > Adress.Adress_id
-Ref: program.skolan_id > skolan.skolan_ID
-Ref: Klass.program_ID > program.program_ID
-Ref: Klass.Utbildningsledare_ID > utbildningsledare.utbildningsledare_ID
-Ref: student.person_ID > personal_info.person_ID
-Ref: student.klass_ID > Klass.klass_ID
-Ref: program_kurs.kurs_ID > kurs.Kurs_ID
-Ref: program_kurs.program_ID > program.program_ID
-Ref: enrollment.student_ID > student.student_ID
-Ref: enrollment.kurs_ID > kurs.Kurs_ID

@@ -4,18 +4,18 @@ SET SEARCH_PATH TO yrkeskolan;
 
 -- 1. Get all students and their class info
 SELECT s.student_ID, pi.Förnamn, pi.Efternamn, k.klass_ID, p.program_namn
-FROM student s
-JOIN personal_info pi ON s.person_ID = pi.person_ID
-JOIN Klass k ON s.klass_ID = k.klass_ID
-JOIN program p ON k.program_ID = p.program_ID;
+FROM yrkeskolan.student s
+JOIN yrkeskolan.personal_info pi ON s.person_ID = pi.person_ID
+JOIN yrkeskolan.klass k ON s.klass_ID = k.klass_ID
+JOIN yrkeskolan.program p ON k.program_ID = p.program_ID;
 
 -- 2. List all courses and the teachers assigned to them
 SET SEARCH_PATH TO yrkeskolan;
 SELECT ku.kurs_namn, pi.Förnamn, pi.Efternamn
-FROM lärare l
-JOIN anställd a ON l.Anställning_ID = a.Anställning_ID
-JOIN personal_info pi ON a.person_ID = pi.person_ID
-JOIN kurs ku ON l.kurs_id = ku.Kurs_ID;
+FROM yrkeskolan.lärare l
+JOIN yrkeskolan.anställd a ON l.Anställning_ID = a.Anställning_ID
+JOIN yrkeskolan.personal_info pi ON a.person_ID = pi.person_ID
+JOIN yrkeskolan.kurs ku ON l.kurs_id = ku.Kurs_ID;
 
 -- 3. Show all students enrolled in "Databaser" course
 SET SEARCH_PATH TO yrkeskolan;

@@ -1,5 +1,5 @@
 -- Skapa schema
-DROP SCHEMA IF EXISTS yrkeskolan CASCADE;
+--DROP SCHEMA IF EXISTS yrkeskolan CASCADE;
 CREATE SCHEMA yrkeskolan;
 SET search_path TO yrkeskolan;
 

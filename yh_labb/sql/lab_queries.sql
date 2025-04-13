@@ -2,6 +2,7 @@
 -- 1. Alla adresser
 SELECT * FROM adress;
 
+
 -- 2. All personalinformation
 SELECT * FROM personal_info;
 
@@ -125,8 +126,6 @@ JOIN personal_info pi ON an.Person_ID = pi.id
 JOIN kurs k ON kl.Kurs_ID = k.id;
 
 
-SELECT p.Program_namn, k.Kurs_namn
-FROM program_kurs pk
-JOIN program p ON pk.Program_ID = p.id
-JOIN kurs k ON pk.Kurs_ID = k.id;
+
+
 

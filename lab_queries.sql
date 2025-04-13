@@ -41,4 +41,14 @@ JOIN utbildningsledare u ON k.Utbildningsledare_ID = u.utbildningsledare_ID
 JOIN anställd a ON u.Anställning_ID = a.Anställning_ID
 JOIN personal_info pi ON a.person_ID = pi.person_ID;
 
+SELECT 
+  k.Kurs_namn,
+  k.Kurs_kod,
+  pi.Förnamn || ' ' || pi.Efternamn AS Lärare_Namn
+FROM KursLärare kl
+JOIN kurs k ON kl.Kurs_ID = k.Kurs_ID
+JOIN lärare l ON kl.Lärare_ID = l.Lärare_ID
+JOIN anställd a ON l.Anställning_ID = a.Anställning_ID
+JOIN personal_info pi ON a.Person_ID = pi.Person_ID
+ORDER BY k.Kurs_namn, Lärare_Namn;
 

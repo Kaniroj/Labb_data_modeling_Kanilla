@@ -69,3 +69,16 @@ INSERT INTO program_kurs VALUES
 INSERT INTO enrollment VALUES
 (1, 1),
 (2, 2);
+
+-- Exempel på KursLärare-data
+-- Anta att:
+-- Kurs_ID: 1 = Programmering 1
+-- Kurs_ID: 2 = Databaser
+-- Lärare_ID: 1 = Eva Nilsson
+-- Lärare_ID: 2 = Johan Karlsson
+
+INSERT INTO KursLärare (Kurs_ID, Lärare_ID) VALUES
+(1, 1),  -- Eva undervisar i Programmering 1
+(1, 2),  -- Johan också i Programmering 1
+(2, 2);  -- Johan undervisar i Databaser
+

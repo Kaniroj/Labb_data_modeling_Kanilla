@@ -2,110 +2,124 @@ Create SCHEMA IF NOT EXISTS yrkeskolan;
 
 SET SEARCH_path TO yrkeskolan; 
 
+-- Skapa tabellen Adress
 CREATE TABLE Adress (
-    Adress_id INT PRIMARY KEY,
-    Stad VARCHAR(100),
-    gata VARCHAR(100),
-    post_nummer VARCHAR(10)
+  Adress_id INT PRIMARY KEY,
+  Stad VARCHAR(100),
+  Gata VARCHAR(100),
+  Postnummer VARCHAR(10)
 );
 
+-- Skapa tabellen personal_info
 CREATE TABLE personal_info (
-    person_ID INT PRIMARY KEY,
-    personnummer VARCHAR(20),
-    Förnamn VARCHAR(50),
-    Efternamn VARCHAR(50),
-    E_post VARCHAR(100),
-    telefonnummer VARCHAR(20),
-    Anhörig_info VARCHAR(255)
+  Person_ID INT PRIMARY KEY,
+  Personnummer VARCHAR(20),
+  Förnamn VARCHAR(50),
+  Efternamn VARCHAR(50),
+  E_post VARCHAR(100),
+  Telefonnummer VARCHAR(20)
 );
 
+-- Skapa tabellen anhörig
+CREATE TABLE anhörig (
+  Anhörig_ID INT PRIMARY KEY,
+  Person_ID INT REFERENCES personal_info(Person_ID),
+  Relation VARCHAR(50),
+  Namn VARCHAR(100)
+);
+
+-- Skapa tabellen skolan
 CREATE TABLE skolan (
-    skolan_ID INT PRIMARY KEY,
-    Namn VARCHAR(100),
-    organisationsnummer VARCHAR(50),
-    E_post VARCHAR(100),
-    telefonnummer VARCHAR(20),
-    Asress_id INT,
-    FOREIGN KEY (Asress_id) REFERENCES Adress(Adress_id)
+  Skolan_ID INT PRIMARY KEY,
+  Namn VARCHAR(100),
+  Organisationsnummer VARCHAR(50),
+  E_post VARCHAR(100),
+  Adress_id INT REFERENCES Adress(Adress_id)
 );
 
+-- Skapa tabellen anställd
 CREATE TABLE anställd (
-    Anställning_ID INT PRIMARY KEY,
-    skol_ID INT,
-    person_ID INT,
-    FOREIGN KEY (skol_ID) REFERENCES skolan(skolan_ID),
-    FOREIGN KEY (person_ID) REFERENCES personal_info(person_ID)
+  Anställning_ID INT PRIMARY KEY,
+  Skolan_ID INT REFERENCES skolan(Skolan_ID),
+  Person_ID INT REFERENCES personal_info(Person_ID)
 );
 
+-- Skapa tabellen utbildningsledare
 CREATE TABLE utbildningsledare (
-    utbildningsledare_ID INT PRIMARY KEY,
-    Anställning_ID INT,
-    FOREIGN KEY (Anställning_ID) REFERENCES anställd(Anställning_ID)
+  Utbildningsledare_ID INT PRIMARY KEY,
+  Anställning_ID INT REFERENCES anställd(Anställning_ID)
 );
 
+-- Skapa tabellen kurs
 CREATE TABLE kurs (
-    Kurs_ID INT PRIMARY KEY,
-    kurs_namn VARCHAR(100),
-    kurs_kod VARCHAR(50),
-    poäng INT,
-    beskrivning VARCHAR(255)
+  Kurs_ID INT PRIMARY KEY,
+  Kurs_namn VARCHAR(100),
+  Kurs_kod VARCHAR(50),
+  Poäng INT,
+  Beskrivning VARCHAR(255)
 );
 
+-- Skapa tabellen lärare
 CREATE TABLE lärare (
-    lärare_ID INT PRIMARY KEY,
-    Anställning_ID INT,
-    kurs_id INT,
-    FOREIGN KEY (Anställning_ID) REFERENCES anställd(Anställning_ID),
-    FOREIGN KEY (kurs_id) REFERENCES kurs(Kurs_ID)
+  Lärare_ID INT PRIMARY KEY,
+  Anställning_ID INT REFERENCES anställd(Anställning_ID)
 );
 
+-- Skapa tabellen organisation
+CREATE TABLE organisation (
+  Organisation_ID VARCHAR(50) PRIMARY KEY,
+  Namn VARCHAR(100),
+  Kontaktperson VARCHAR(100)
+);
+
+-- Skapa tabellen konsult
 CREATE TABLE konsult (
-    konsult_ID INT PRIMARY KEY,
-    Anställning_ID INT,
-    organisations_ID VARCHAR(50),
-    utbildare_ID VARCHAR(50),
-    kurs_ID INT,
-    Adress_id INT,
-    FOREIGN KEY (Anställning_ID) REFERENCES anställd(Anställning_ID),
-    FOREIGN KEY (kurs_ID) REFERENCES kurs(Kurs_ID),
-    FOREIGN KEY (Adress_id) REFERENCES Adress(Adress_id)
+  Konsult_ID INT PRIMARY KEY,
+  Anställning_ID INT REFERENCES anställd(Anställning_ID),
+  Organisation_ID VARCHAR(50) REFERENCES organisation(Organisation_ID),
+  Utbildare_ID VARCHAR(50),
+  Kurs_ID INT REFERENCES kurs(Kurs_ID),
+  Adress_id INT REFERENCES Adress(Adress_id)
 );
 
+-- Skapa tabellen program
 CREATE TABLE program (
-    program_ID INT PRIMARY KEY,
-    program_namn VARCHAR(100),
-    skolan_id INT,
-    FOREIGN KEY (skolan_id) REFERENCES skolan(skolan_ID)
+  Program_ID INT PRIMARY KEY,
+  Program_namn VARCHAR(100),
+  Skolan_ID INT REFERENCES skolan(Skolan_ID)
 );
 
+-- Skapa tabellen Klass
 CREATE TABLE Klass (
-    klass_ID INT PRIMARY KEY,
-    program_ID INT,
-    Utbildningsledare_ID INT,
-    FOREIGN KEY (program_ID) REFERENCES program(program_ID),
-    FOREIGN KEY (Utbildningsledare_ID) REFERENCES utbildningsledare(utbildningsledare_ID)
+  Klass_ID INT PRIMARY KEY,
+  Program_ID INT REFERENCES program(Program_ID),
+  Utbildningsledare_ID INT REFERENCES utbildningsledare(Utbildningsledare_ID)
 );
 
+-- Skapa tabellen student
 CREATE TABLE student (
-    student_ID INT PRIMARY KEY,
-    person_ID INT,
-    klass_ID INT,
-    FOREIGN KEY (person_ID) REFERENCES personal_info(person_ID),
-    FOREIGN KEY (klass_ID) REFERENCES Klass(klass_ID)
+  Student_ID INT PRIMARY KEY,
+  Person_ID INT REFERENCES personal_info(Person_ID),
+  Klass_ID INT REFERENCES Klass(Klass_ID)
 );
 
+-- Skapa tabellen program_kurs
 CREATE TABLE program_kurs (
-    kurs_ID INT,
-    program_ID INT,
-    PRIMARY KEY (kurs_ID, program_ID),
-    FOREIGN KEY (kurs_ID) REFERENCES kurs(Kurs_ID),
-    FOREIGN KEY (program_ID) REFERENCES program(program_ID)
+  Kurs_ID INT REFERENCES kurs(Kurs_ID),
+  Program_ID INT REFERENCES program(Program_ID),
+  PRIMARY KEY (Kurs_ID, Program_ID)
 );
 
+-- Skapa tabellen enrollment
 CREATE TABLE enrollment (
-    student_ID INT,
-    kurs_ID INT,
-    PRIMARY KEY (student_ID, kurs_ID),
-    FOREIGN KEY (student_ID) REFERENCES student(student_ID),
-    FOREIGN KEY (kurs_ID) REFERENCES kurs(Kurs_ID)
+  Student_ID INT REFERENCES student(Student_ID),
+  Kurs_ID INT REFERENCES kurs(Kurs_ID),
+  PRIMARY KEY (Student_ID, Kurs_ID)
+);
+
+-- Skapa tabellen KursLärare (många-till-många)
+CREATE TABLE KursLärare (
+  Kurs_ID INT REFERENCES kurs(Kurs_ID),
+  Lärare_ID INT REFERENCES lärare(Lärare_ID),
+  PRIMARY KEY (Kurs_ID, Lärare_ID)
 );

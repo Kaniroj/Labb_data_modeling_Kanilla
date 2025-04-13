@@ -1,0 +1,76 @@
+Table Adress {
+  Adress_id int [pk]
+  Stad varchar(100)
+  Gata varchar(100)
+  Postnummer varchar(10)
+}Table personal_info {
+  Person_ID int [pk]
+  Personnummer varchar(20)
+  Förnamn varchar(50)
+  Efternamn varchar(50)
+  E_post varchar(100)
+  Telefonnummer varchar(20)
+}Table anhörig {
+  Anhörig_ID int [pk]
+  Person_ID int [ref: > personal_info.Person_ID]
+  Relation varchar(50)
+  Namn varchar(100)
+}Table skolan {
+  Skolan_ID int [pk]
+  Namn varchar(100)
+  Organisationsnummer varchar(50)
+  E_post varchar(100)
+  Adress_id int [ref: > Adress.Adress_id]
+}Table anställd {
+  Anställning_ID int [pk]
+  Skolan_ID int [ref: > skolan.Skolan_ID]
+  Person_ID int [ref: > personal_info.Person_ID]
+}Table utbildningsledare {
+  Utbildningsledare_ID int [pk]
+  Anställning_ID int [ref: > anställd.Anställning_ID]
+}Table kurs {
+  Kurs_ID int [pk]
+  Kurs_namn varchar(100)
+  Kurs_kod varchar(50)
+  Poäng int
+  Beskrivning varchar(255)
+}Table lärare {
+  Lärare_ID int [pk]
+  Anställning_ID int [ref: > anställd.Anställning_ID]
+}Table organisation {
+  Organisation_ID varchar(50) [pk]
+  Namn varchar(100)
+  Kontaktperson varchar(100)
+}Table konsult {
+  Konsult_ID int [pk]
+  Anställning_ID int [ref: > anställd.Anställning_ID]
+  Organisation_ID varchar(50) [ref: > organisation.Organisation_ID]
+  Utbildare_ID varchar(50)
+  Kurs_ID int [ref: > kurs.Kurs_ID]
+  Adress_id int [ref: > Adress.Adress_id]
+}Table program {
+  Program_ID int [pk]
+  Program_namn varchar(100)
+  Skolan_ID int [ref: > skolan.Skolan_ID]
+}Table Klass {
+  Klass_ID int [pk]
+  Program_ID int [ref: > program.Program_ID]
+  Utbildningsledare_ID int [ref: > utbildningsledare.Utbildningsledare_ID]
+}Table student {
+  Student_ID int [pk]
+  Person_ID int [ref: > personal_info.Person_ID]
+  Klass_ID int [ref: > Klass.Klass_ID]
+}Table program_kurs {
+  Kurs_ID int [ref: > kurs.Kurs_ID]
+  Program_ID int [ref: > program.Program_ID]
+  Primary Key (Kurs_ID, Program_ID)
+}Table enrollment {
+  Student_ID int [ref: > student.Student_ID]
+  Kurs_ID int [ref: > kurs.Kurs_ID]
+  Primary Key (Student_ID, Kurs_ID)
+}Table KursLärare {
+  Kurs_ID int [ref: > kurs.Kurs_ID]
+  Lärare_ID int [ref: > lärare.Lärare_ID]
+  Primary Key (Kurs_ID, Lärare_ID)
+}
+

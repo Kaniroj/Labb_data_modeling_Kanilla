@@ -1,54 +1,125 @@
 
--- Set the schema
-SET SEARCH_PATH TO yrkeskolan;
+-- 1. Alla adresser
+SELECT * FROM adress;
 
--- 1. Get all students and their class info
-SELECT s.student_ID, pi.Förnamn, pi.Efternamn, k.klass_ID, p.program_namn
-FROM yrkeskolan.student s
-JOIN yrkeskolan.personal_info pi ON s.person_ID = pi.person_ID
-JOIN yrkeskolan.klass k ON s.klass_ID = k.klass_ID
-JOIN yrkeskolan.program p ON k.program_ID = p.program_ID;
+-- 2. All personalinformation
+SELECT * FROM personal_info;
 
--- 2. List all courses and the teachers assigned to them
-SET SEARCH_PATH TO yrkeskolan;
-SELECT ku.kurs_namn, pi.Förnamn, pi.Efternamn
-FROM yrkeskolan.lärare l
-JOIN yrkeskolan.anställd a ON l.Anställning_ID = a.Anställning_ID
-JOIN yrkeskolan.personal_info pi ON a.person_ID = pi.person_ID
-JOIN yrkeskolan.kurs ku ON l.kurs_id = ku.Kurs_ID;
-
--- 3. Show all students enrolled in "Databaser" course
-SET SEARCH_PATH TO yrkeskolan;
-SELECT pi.Förnamn, pi.Efternamn, ku.kurs_namn
-FROM enrollment e
-JOIN student s ON e.student_ID = s.student_ID
-JOIN personal_info pi ON s.person_ID = pi.person_ID
-JOIN kurs ku ON e.kurs_ID = ku.Kurs_ID
-WHERE ku.kurs_namn = 'Databaser';
-
--- 4. Find all schools and their addresses
-SET SEARCH_PATH TO yrkeskolan;
-SELECT sk.Namn, a.Stad, a.gata, a.post_nummer
-FROM skolan sk
-JOIN Adress a ON sk.Asress_id = a.Adress_id;
-
--- 5. Get the full list of programs with their assigned utbildningsledare
-SET SEARCH_PATH TO yrkeskolan;
-SELECT p.program_namn, pi.Förnamn, pi.Efternamn
-FROM program p
-JOIN Klass k ON p.program_ID = k.program_ID
-JOIN utbildningsledare u ON k.Utbildningsledare_ID = u.utbildningsledare_ID
-JOIN anställd a ON u.Anställning_ID = a.Anställning_ID
-JOIN personal_info pi ON a.person_ID = pi.person_ID;
-
+-- 3. Alla anhöriga kopplade till personer
 SELECT 
-  k.Kurs_namn,
-  k.Kurs_kod,
-  pi.Förnamn || ' ' || pi.Efternamn AS Lärare_Namn
-FROM KursLärare kl
-JOIN kurs k ON kl.Kurs_ID = k.Kurs_ID
-JOIN lärare l ON kl.Lärare_ID = l.Lärare_ID
-JOIN anställd a ON l.Anställning_ID = a.Anställning_ID
-JOIN personal_info pi ON a.Person_ID = pi.Person_ID
-ORDER BY k.Kurs_namn, Lärare_Namn;
+  pi.Förnamn,
+  pi.Efternamn,
+  a.Relation,
+  a.Namn AS Anhörig_namn
+FROM anhörig a
+JOIN personal_info pi ON a.Person_ID = pi.id;
 
+-- 4. Alla skolor och deras adress
+SELECT 
+  sk.Namn AS Skola,
+  sk.Organisationsnummer,
+  a.Gata,
+  a.Stad,
+  a.Postnummer
+FROM skolan sk
+JOIN adress a ON sk.Adress_id = a.id;
+
+-- 5. Alla anställda och vilken skola de tillhör
+SELECT 
+  pi.Förnamn,
+  pi.Efternamn,
+  sk.Namn AS Skola
+FROM anställd an
+JOIN personal_info pi ON an.Person_ID = pi.id
+JOIN skolan sk ON an.Skolan_ID = sk.id;
+
+-- 6. Alla utbildningsledare
+SELECT 
+  pi.Förnamn,
+  pi.Efternamn
+FROM utbildningsledare ul
+JOIN anställd an ON ul.Anställning_ID = an.id
+JOIN personal_info pi ON an.Person_ID = pi.id;
+
+-- 7. Alla lärare
+SELECT 
+  pi.Förnamn,
+  pi.Efternamn
+FROM lärare l
+JOIN anställd an ON l.Anställning_ID = an.id
+JOIN personal_info pi ON an.Person_ID = pi.id;
+
+-- 8. Alla kurser
+SELECT * FROM kurs;
+
+-- 9. Alla organisationer
+SELECT * FROM organisation;
+
+-- 10. Alla konsulter och deras organisationer
+SELECT 
+  pi.Förnamn,
+  pi.Efternamn,
+  o.Namn AS Organisation,
+  k.Utbildare_ID,
+  ku.Kurs_namn
+FROM konsult k
+JOIN anställd an ON k.Anställning_ID = an.id
+JOIN personal_info pi ON an.Person_ID = pi.id
+JOIN organisation o ON k.Organisation_ID = o.id
+JOIN kurs ku ON k.Kurs_ID = ku.id;
+
+-- 11. Alla program
+SELECT * FROM program;
+
+-- 12. Alla klasser och tillhörande utbildningsledare
+SELECT 
+  kl.id AS Klass_ID,
+  p.Program_namn,
+  pi.Förnamn AS LedareFörnamn,
+  pi.Efternamn AS LedareEfternamn
+FROM klass kl
+JOIN program p ON kl.Program_ID = p.id
+JOIN utbildningsledare ul ON kl.Utbildningsledare_ID = ul.id
+JOIN anställd an ON ul.Anställning_ID = an.id
+JOIN personal_info pi ON an.Person_ID = pi.id;
+
+-- 13. Alla studenter och deras klass
+SELECT 
+  s.id AS Student_ID,
+  pi.Förnamn,
+  pi.Efternamn,
+  p.Program_namn
+FROM student s
+JOIN personal_info pi ON s.Person_ID = pi.id
+JOIN klass k ON s.Klass_ID = k.id
+JOIN program p ON k.Program_ID = p.id;
+
+-- 14. Kurser som tillhör ett program
+SELECT 
+  p.Program_namn,
+  k.Kurs_namn,
+  k.Kurs_kod
+FROM program_kurs pk
+JOIN program p ON pk.Program_ID = p.id
+JOIN kurs k ON pk.Kurs_ID = k.id;
+
+-- 15. Studenter och vilka kurser de är registrerade på
+SELECT 
+  pi.Förnamn,
+  pi.Efternamn,
+  k.Kurs_namn
+FROM enrollment e
+JOIN student s ON e.Student_ID = s.id
+JOIN personal_info pi ON s.Person_ID = pi.id
+JOIN kurs k ON e.Kurs_ID = k.id;
+
+-- 16. Lärare och vilka kurser de undervisar
+SELECT 
+  pi.Förnamn,
+  pi.Efternamn,
+  k.Kurs_namn
+FROM kursLärare kl
+JOIN lärare l ON kl.Lärare_ID = l.id
+JOIN anställd an ON l.Anställning_ID = an.id
+JOIN personal_info pi ON an.Person_ID = pi.id
+JOIN kurs k ON kl.Kurs_ID = k.id;

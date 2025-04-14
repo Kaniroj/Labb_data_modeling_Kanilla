@@ -1,3 +1,4 @@
+SET search_path TO yrkeskolan;
 
 -- 1. Alla adresser
 SELECT * FROM adress;
